@@ -1,0 +1,8 @@
+[[plugins]]
+repo = 'cocopon/iceberg.vim.git'
+
+[[plugins]]
+repo = 'Shougo/unite.vim.git'
+
+[[plugins]]
+repo = 'Shougo/vimfiler.vim.git'
