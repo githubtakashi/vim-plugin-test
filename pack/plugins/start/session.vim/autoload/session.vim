@@ -2,9 +2,10 @@
 " 詳細は`:h fnamemodify()`を参照
 let s:sep = fnamemodify('.', ':p')[-1:]
 
+" session fileを作成する関数
 function! session#create_session(file) abort
 	" SessionCreateの引数をfileで受け取れるようにする
-	" join()でセッションファイル保存先へのフルパスを生成し、mksession!でセッションファイルを作成
+	" join()でセッションファイル保存先へのフルパスを生成、mksession!の引数に渡すことでセッションファイル保存先へセッションファイルを作成
 	execute 'mksession!' join([g:session_path, a:file], s:sep)
 
 	" redrawで画面を再描画してメッセージを出力する
@@ -12,6 +13,7 @@ function! session#create_session(file) abort
 	echo 'session.vim: created'
 endfunction
 
+" session fileをロードする関数
 function! session#load_session(file) abort
 	" `:source`で渡されるセッションファイルをロードする
 	execute 'source' join([g:session_path, a:file], s:sep)
@@ -40,15 +42,15 @@ function! s:files() abort
 	
 	" file という引数を受け取り、そのファイルがディレクトリでなければ1を返すLambda
 	let Filter = { file -> !isdirectory(session_path . s:sep . file)}
-	" readdir の第２引数に Filter を使用することでファイルだけが入ったリストが取得できる
+	" readdir の第2引数に Filter を使用することでファイルだけが入ったリストが取得できる
 	return readdir(session_path, Filter)
 endfunction
 
 
-" リストを表示できるバッファを作成(すでにあれば表示)
-" s:files()で取得できたファイル一覧を一時バッファに書き出し、ユーザが選択できるようにする
+" リストを表示できるバッファを作成(すでにあれば表示)する関数
+" s:files()で取得できたファイル一覧を一時バッファに書き出しユーザが選択できるようにする
 
-" セッション一覧を表示するバッファ名
+" セッション一覧を表示するバッファ名を定義(後でバッファ操作の関数の引数に渡すことで結果としてバッファ名として認識される)
 let s:session_list_buffer = 'SESSIONS'
 
 function! session#sessions() abort
@@ -58,13 +60,13 @@ function! session#sessions() abort
 	endif
 
 	" バッファが存在している場合
-	if bufexitsts(s:session_list_buffer)
+	if bufexists(s:session_list_buffer)
 	  " バッファがウィンドウに表示されている場合は`win_gotoid`でウィンドウに移動する
 	  let winid = bufwinid(s:session_list_buffer)
 	  if winid isnot# -1
 	    call win_gotoid(winid)
 
-	  " バッファがウィンドウに表示されていない場合は`sbuffer`で新しいウィンドウを作成してバッファを開く 
+	  " バッファが存在するけどウィンドウに表示されていない場合は`sbuffer`で新しいウィンドウを作成してバッファを開く 
 	  else
 	    execute 'sbuffer' s:session_list_buffer 
 	  endif
